@@ -1,0 +1,179 @@
+<html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ultimate Registration Form</title>
+  <link rel="stylesheet" href="style1.css">
+</head>
+<body>
+
+<div class="theme-toggle" onclick="toggleTheme()">🌙</div>
+
+<div class="container">
+  <form class="form-box" id="form">
+    <h1>Register</h1>
+
+    <div class="input-box">
+      <input type="text" id="name" required>
+      <label>Full Name</label>
+      <small></small>
+    </div>
+
+    <div class="input-box">
+      <input type="email" id="email" required>
+      <label>Email</label>
+      <small></small>
+    </div>
+
+    <div class="input-box password-box">
+      <input type="password" id="password" required>
+      <label>Password</label>
+      <span class="toggle" onclick="togglePassword()">👁</span>
+
+      <div class="strength">
+        <div id="strength-bar"></div>
+      </div>
+
+      <small></small>
+    </div>
+
+    <div class="input-group">
+      <p>Gender</p>
+      <div class="radio-group">
+        <label><input type="radio" name="gender"> Male</label>
+        <label><input type="radio" name="gender"> Female</label>
+        <label><input type="radio" name="gender"> Other</label>
+      </div>
+    </div>
+
+    <div class="input-box">
+      <select id="course" required>
+        <option value=""></option>
+        <option>Web Development</option>
+        <option>AI / Machine Learning</option>
+        <option>Data Science</option>
+        <option>UI / UX Design</option>
+      </select>
+      <label>Course / Interest</label>
+      <small></small>
+    </div>
+
+    <button type="submit">Create Account</button>
+  </form>
+</div>
+
+<!-- SUCCESS POPUP -->
+<div class="popup" id="popup">
+  <h2>🎉 Success!</h2>
+  <p>Your account has been created</p>
+  <button onclick="closePopup()">OK</button>
+</div>
+
+<script>
+// Toggle Password
+function togglePassword() {
+  const pass = document.getElementById("password");
+  pass.type = pass.type === "password" ? "text" : "password";
+}
+
+// Theme Toggle
+function toggleTheme() {
+  document.body.classList.toggle("dark");
+}
+
+// Password Strength
+const password = document.getElementById("password");
+const strengthBar = document.getElementById("strength-bar");
+
+password.addEventListener("input", () => {
+  const val = password.value;
+  let strength = 0;
+
+  if (val.length > 5) strength++;
+  if (val.match(/[A-Z]/)) strength++;
+  if (val.match(/[0-9]/)) strength++;
+  if (val.match(/[^A-Za-z0-9]/)) strength++;
+
+  const widths = ["0%", "25%", "50%", "75%", "100%"];
+  const colors = ["", "red", "orange", "yellow", "green"];
+
+  strengthBar.style.width = widths[strength];
+  strengthBar.style.background = colors[strength];
+});
+
+// Form Validation + Local Storage
+const form = document.getElementById("form");
+
+form.addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  let valid = true;
+
+  const name = document.getElementById("name");
+  const email = document.getElementById("email");
+  const password = document.getElementById("password");
+  const course = document.getElementById("course");
+
+  if (name.value.trim() === "") {
+    setError(name, "Name required");
+    valid = false;
+  } else {
+    setSuccess(name);
+  }
+
+  if (!email.value.includes("@")) {
+    setError(email, "Enter valid email");
+    valid = false;
+  } else {
+    setSuccess(email);
+  }
+
+  if (password.value.length < 6) {
+    setError(password, "Min 6 characters");
+    valid = false;
+  } else {
+    setSuccess(password);
+  }
+
+  if (course.value === "") {
+    setError(course, "Select course");
+    valid = false;
+  } else {
+    setSuccess(course);
+  }
+
+  if (valid) {
+    const userData = {
+      name: name.value,
+      email: email.value
+    };
+
+    localStorage.setItem("user", JSON.stringify(userData));
+
+    document.getElementById("popup").classList.add("show");
+    form.reset();
+    strengthBar.style.width = "0%";
+  }
+});
+
+function setError(input, message) {
+  const box = input.parentElement;
+  const small = box.querySelector("small");
+  small.innerText = message;
+  small.style.color = "red";
+}
+
+function setSuccess(input) {
+  const box = input.parentElement;
+  const small = box.querySelector("small");
+  small.innerText = "";
+}
+
+function closePopup() {
+  document.getElementById("popup").classList.remove("show");
+}
+</script>
+
+</body>
+</html>
